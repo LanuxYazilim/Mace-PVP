@@ -1,5 +1,7 @@
 # MacePvP
 
+> Bu Dosyayı Tamamen Okumadan KESINLIKLE Modu Kullanmayınız!
+
 Minecraft **1.21.11** (Fabric) için istemci taraflı mace PvP yardımcı modu.
 
 Mod tamamen client-side çalışır, sunucuya hiçbir özel paket göndermez ve **hiç
@@ -125,97 +127,8 @@ renkler dahil her şey elle de düzenlenebilir (renk formatı `0xAARRGGBB`).
 
 ## Kurulum
 
-### A) Hazır jar'ı indir (derleme yapmadan)
+### Yan Taraftaki Sürüm Numarasından İndirebilirsiniz.
 
-Depoda GitHub Actions ile otomatik derleme kurulu. Her push'ta jar üretilir:
-
-1. GitHub'da depoya git → **Actions** sekmesi → **build** iş akışı
-2. En üstteki başarılı çalıştırmaya tıkla
-3. Sayfanın altındaki **Artifacts → macepvp-jar** ile indir
-4. Zip'in içinden çıkan `macepvp-1.0.0.jar` dosyasını `.minecraft/mods/` klasörüne at
-
-Sürüm etiketi atarsan (`git tag v1.0.0 && git push --tags`) jar doğrudan
-**Releases** sayfasına da yüklenir — indirme linki paylaşılabilir olur.
-
-İş akışı derlemeden önce `tools/resolve_versions.py` betiğini çalıştırır; bu
-betik yarn mappings, loader, loom ve Fabric API sürümlerini resmî kaynaklardan
-(meta.fabricmc.net, maven.fabricmc.net, Modrinth) o anki Minecraft sürümü için
-kendisi bulur. Yani sürüm numaralarını elle takip etmene gerek yok.
-
-Actions → build → **Run workflow** ile farklı bir Minecraft sürümü de
-verebilirsin (örneğin `1.21.8`).
-
-### B) Kendi bilgisayarında derle
-
-**JDK 25 gerekir.** (Mod'un kendi bytecode'u Java 21 hedefler, ama `fabric-loom`
-1.18 Gradle'ın Java 25 üzerinde çalışmasını şart koşuyor.)
-
-```bash
-python3 tools/resolve_versions.py    # sürümleri güncelle (isteğe bağlı)
-./gradlew build
-```
-
-Çıktı: `build/libs/macepvp-1.0.0.jar` → `.minecraft/mods/` klasörüne at.
-Ayrıca Fabric Loader ve Fabric API jar'ı da mods klasöründe olmalı.
-
-### Doğrulanmış yapılandırma
-
-Aşağıdaki kombinasyon CI'da **başarıyla derlendi**:
-
-```properties
-minecraft_version=1.21.11
-yarn_mappings=1.21.11+build.6
-loader_version=0.19.5
-loom_version=1.18-SNAPSHOT
-fabric_version=0.141.6+1.21.11
-java_release=21          # mod bytecode hedefi
-```
-
-Gradle 9.7.1 (wrapper ile gelir) + JDK 25 (Gradle'ı çalıştırmak için).
-
-Daha eski bir Minecraft sürümü için `tools/resolve_versions.py <sürüm>`
-çalıştırın; yarn, loader, loom ve Fabric API sürümlerini resmî kaynaklardan
-kendisi bulur. Eski Minecraft sürümlerinde daha eski bir loom gerekeceği için
-JDK 21 yeterli olabilir.
-
-### Sürüm uyumluluğu
-
-Sürümden sürüme en çok değişen çağrılar tek bir dosyada toplandı:
-**`src/main/java/com/nylithra/macepvp/util/Compat.java`**
-
-Derleme hatası alırsan önce oraya bak. İçinde alternatif sürümler yorum satırı
-olarak hazır duruyor:
-
-| Çağrı | Not |
-|---|---|
-| `Compat.posOf()` → `getX/getY/getZ` | 1.21.11'de `Entity.getPos()` yok |
-| `Camera.getCameraPos()` | eskiden `getPos()` |
-| `KeyBinding.Category.create(Identifier)` | ≤1.21.5'te kategori düz `String`'di |
-| `RenderLayers.lines()` | eskiden `RenderLayer.getLines()` |
-| `...rendering.v1.world.WorldRenderEvents` | eskiden `...rendering.v1` altındaydı |
-| `PlayerInventory.setSelectedSlot(int)` | ≤1.21.3'te `selectedSlot` alanı |
-| `EntityAttributes.ARMOR_TOUGHNESS` | ≤1.21.4'te `GENERIC_ARMOR_TOUGHNESS` |
-| `RenderTickCounter.getTickProgress(boolean)` | ≤1.21.3'te `getTickDelta(boolean)` |
-
-Bu adları tahmin etmek yerine `tools/api-probe.sh` gerçek jar'lardan `javap`
-ile okur; derleme başarısız olursa CI bu çıktıyı otomatik basar.
-
----
-
-## Proje yapısı
-
-```
-com.nylithra.macepvp
-├── MacePvpMod            olay kayıtları (giriş noktası)
-├── combat/               mace hasar formülleri, büyü okuma
-├── config/               ayar modeli + JSON kaydetme
-├── input/                tuş atamaları, sanal tuş/fare girdisi
-├── macro/                makro durum makinesi ve hazır diziler
-├── predict/              fizik, düşüş & mermi simülasyonu, hareket takibi
-├── render/               dünya çizimi, HUD, ekran projeksiyonu
-├── screen/               oyun içi ayar ekranı
-└── util/                 renkler, sürüm uyumluluk katmanı
-```
 
 ---
 
